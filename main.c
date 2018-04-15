@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "compiler_driver.h"
-#include "virtual_machine.h"
 
 int main(int argc, char ** argv)
 {
@@ -25,4 +24,6 @@ int main(int argc, char ** argv)
 			options |= getOptionNum(argv[i]);
 		}
 	}
+	
+	run(options, arg[1]);
 }

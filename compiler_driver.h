@@ -10,32 +10,22 @@ enum options
 	v_num = 4
 };
 
-int run(char option);
+int run(int options, char * filename);
 int getOptionNum(char * option);
 
-int run(char option)
+int run(int options, char * filename)
 {
-	switch(option)
+	if(options & l_num)
 	{
-		// Print list of lexemes/Tokens (Scanner Output) to the screen
-		case 'l':
-			
-		break;
 		
-		// Print generated assembly code (Parser/Codegen output)
-		case 'a':
+	}
+	if(options & a_num)
+	{
 		
-		break;
+	}
+	if(options & v_num)
+	{
 		
-		// Print virtual machine execution stack trace
-		case 'v':
-		
-		break;
-		
-		// Print nothing to the console except for "in" and "out"
-		default:
-		
-		break;
 	}
 }
 
