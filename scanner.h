@@ -16,6 +16,46 @@ enum tokens
 	readsym = 32, elsesym = 33
 };
 
+typedef struct lexeme 
+{
+	char * token;
+	int type;
+	
+	struct lexeme next;
+}Lexeme;
 
+void printLexemeTable(Lexeme * l);
+void printLexemeList(Lexeme * l);
+Lexeme * scan(char * filename, int options);
 
+// Scans code for lexemes
+Lexeme * scan(char * filename, int options);
+{
+	FILE * fp;
+	
+	fp = fopen(filename, "r");
+	
+	if(!fp)
+	{
+		printf("ERROR: Invalid Filename");
+		fclose(fp);
+		exit(1);
+	}
+	
+	
+	
+	fclose(fp);
+}
+
+// Prints lexemes in list format
+void printLexemeList(Lexeme * l)
+{
+	
+}
+
+// Prints Lexemes in table format
+void printLexemeTable(Lexeme * l)
+{
+	
+}
 #endif

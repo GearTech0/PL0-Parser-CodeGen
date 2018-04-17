@@ -26,7 +26,7 @@ int main(int argc, char ** argv)
 		}
 	}
 	
-	printf("%s", getError(4));
+	printf("%s %d", getError(4), options);
 	
 	//run(options, arg[1]);
 }
