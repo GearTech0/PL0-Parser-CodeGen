@@ -26,7 +26,7 @@ int main(int argc, char ** argv)
 		}
 	}
 	
-	printf("%s %d", getError(4), options);
+	cdRun(options, argv[1]);
 	
-	//run(options, arg[1]);
+	return 0;
 }

@@ -25,11 +25,52 @@ typedef struct instruction {
     int size;
 } instruction;
 
-void printStack(int sp, int bp, int* stack, int lex);
-char * opToString(int op);
 instruction ** readInstructions(char * fname);
+void printStack(int sp, int bp, int* stack, int lex);
+void vmRun(int options, char * filename);
+char * opToString(int op);
 int fetchInstruction(instruction * inst, int reg[16], int * PC, int * BP, int * SP);
 int base(int l, int base);
+
+void vmRun(int options, char * filename)
+{
+	int i = 0, j = 0;
+    int * reg = (int *)malloc(16 * sizeof(int));
+	int print = options & v_num;
+
+    // Set Up registers with zeroes
+    for(i = 0; i < MAX_STACK_HEIGHT; i++) { stack[i] = 0; }
+    for(i = 0; i < 8; i++) { reg[i] = 0; }
+
+    instruction ** code = readInstructions(filename);
+	
+	if(print)
+		printf("OP   Rg Lx Vl[ PC BP SP] \n");
+
+    for(i = 0; i < code[0]->size;)
+    {
+        halt = fetchInstruction(code[i], reg, &PC, &BP, &SP);
+
+		if(print)
+		{
+			// Print code info
+			printf("%-4s%3d%3d%3d[%3d%3d%3d] ", opToString(code[i]->op), code[i]->r, code[i]->l, code[i]->m, PC, BP, SP);
+			printStack(SP, BP, stack, LEX);
+			printf("\n");
+
+			// Print Registers
+			printf("Registers:[");
+			for(j = 0; j < 8; j++)
+			{
+				printf("%3d", reg[j]);
+			}
+			printf("]\n");
+		}
+
+        if(halt == -1) break;
+        i = PC;
+    }
+}
 
 instruction ** readInstructions(char * fname)
 {
