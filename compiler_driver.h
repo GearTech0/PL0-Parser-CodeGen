@@ -1,8 +1,6 @@
 #ifndef COMPILER_DRIVER_H
 #define COMPILER_DRIVER_H
 
-#include <string.h>
-
 enum options
 {
 	l_num = 1,
@@ -10,23 +8,26 @@ enum options
 	v_num = 4
 };
 
-int run(int options, char * filename);
+#include <string.h>
+
+#include "scanner.h"
+#include "parser.h"
+#include "code_generator.h"
+#include "virtual_machine.h"
+
+int cdRun(int options, char * filename);
 int getOptionNum(char * option);
 
-int run(int options, char * filename)
+int cdRun(int options, char * filename)
 {
-	if(options & l_num)
-	{
-		
-	}
-	if(options & a_num)
-	{
-		
-	}
-	if(options & v_num)
-	{
-		
-	}
+	// Run Scanner
+	
+	// Run Parser
+	
+	// Run Code Generator
+	
+	// Run Virtual Machine
+	vmRun(options, filename);
 }
 
 int getOptionNum(char * option)

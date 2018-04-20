@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "compiler_driver.h"
+#include "error.h"
 
 int main(int argc, char ** argv)
 {
@@ -25,5 +26,7 @@ int main(int argc, char ** argv)
 		}
 	}
 	
-	run(options, arg[1]);
+	cdRun(options, argv[1]);
+	
+	return 0;
 }
