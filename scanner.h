@@ -1,9 +1,13 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
+#include "lexer.h"
+
 typedef struct inputStream 
 {
 	int pos;
+	int line;
+	int col;
 	char * input;
 	int (*isEndOfStream)(struct inputStream *);
 	char (*next)(struct inputStream *);
@@ -11,24 +15,10 @@ typedef struct inputStream
 	void (*resetStream)(struct inputStream *);
 } inputStream;
 
-typedef enum { 
-	nulsym = 1, identsym, numbersym, plussym, 
-	minussym,multsym,  slashsym, oddsym, eqsym, 
-	neqsym, lessym, leqsym,gtrsym, geqsym, lparentsym, 
-	rparentsym, commasym, semicolonsym,periodsym, becomessym,
-	beginsym, endsym, ifsym, thensym, whilesym, dosym, callsym, 
-	constsym, varsym, procsym, writesym,readsym , elsesym
-
-} token_type;
-
-typedef struct token
-{
-	
-} token;
-
 char next(inputStream * stream);
 char peek(const inputStream * stream);
 int isEndOfStream(inputStream * stream);
+int readNext(inputStream * stream);
 void resetStream(inputStream * stream);
 inputStream * createInputStream();
 
@@ -59,11 +49,35 @@ void scanFile(char * filename)
 	fclose(fp);
 }
 
+int readNext(inputStream * stream)
+{
+	if(stream->isEndOfStream(stream))
+		return -1;
+	char ch = stream->peek(stream);
+	if(ch == "/")
+	{
+		return checkComment(ch);
+	}
+	if(isdigit(ch))
+	{
+		
+	}
+	if(isAlpha(ch))
+	{
+		return check
+	}
+}
+
 char next(inputStream * stream)
 {
 	char retChar = stream->input[(stream->pos)++];
 	if(retChar != '\n')
+	{
+		(stream->col)++;
 		return retChar;
+	}
+	stream->col = 0;
+	(stream->line)++;
 	return '\0';
 }
 
@@ -74,7 +88,7 @@ char peek(const inputStream * stream)
 
 int isEndOfStream(inputStream * stream)
 {
-	return stream->pos < strlen(stream->input);
+	return stream->pos => strlen(stream->input);
 }
 
 void resetStream(inputStream * stream)
@@ -86,6 +100,8 @@ inputStream * createInputStream()
 {
 	inputStream * stream = (inputStream *)malloc(sizeof(inputStream));
 	stream->pos = 0;
+	stream->line = 1;
+	stream->col = 0;
 	stream->input = (char *)malloc(1024*sizeof(char));
 	stream->next = next;
 	stream->isEndOfStream = isEndOfStream;
