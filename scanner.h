@@ -1,6 +1,7 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
+#include <ctype.h>
 #include "lexer.h"
 
 typedef struct inputStream 
@@ -9,6 +10,7 @@ typedef struct inputStream
 	int line;
 	int col;
 	char * input;
+	char * toClose;
 	int (*isEndOfStream)(struct inputStream *);
 	char (*next)(struct inputStream *);
 	char (*peek)(const struct inputStream *);
@@ -18,9 +20,15 @@ typedef struct inputStream
 char next(inputStream * stream);
 char peek(const inputStream * stream);
 int isEndOfStream(inputStream * stream);
-int readNext(inputStream * stream);
+token * readNext(inputStream * stream);
 void resetStream(inputStream * stream);
 inputStream * createInputStream();
+
+token * readSlash(inputStream * stream);
+token * readNumber(inputStream * stream);
+token * readIdent(inputStream * stream);
+token * readPeriod(inputStream * stream);
+token * readSpecial(inputStream * stream);
 
 void scanFile(char * filename)
 {
@@ -33,39 +41,100 @@ void scanFile(char * filename)
 	}
 	
 	inputStream * stream = createInputStream();
+	token * tokenList = (token *) malloc(sizeof(token));
+	size_t len = 0;
 	
 	// Scan file to begin parsing
-	while(fscanf(fp, "%s", stream->input) != EOF)
-	{
-		while(stream->isEndOfStream(stream))
-		{
-			//printf("%c", stream->next(stream)); Debug
-		}
-		
-		// Reset position marker for stream reader
-		stream->resetStream(stream);
-	}
+	fscanf(fp, "%[^\0]", stream->input);
+	printf("\ninput: \n%s\n", stream->input); // Debug
+	strcat(stream->input, "\0");
+	
+	addToken(tokenList, readNext(stream));
 	
 	fclose(fp);
+	free(stream);
+	free(tokenList);
 }
 
-int readNext(inputStream * stream)
+token * readNext(inputStream * stream)
 {
-	if(stream->isEndOfStream(stream))
-		return -1;
+	//printf("%c", stream->next(stream)); Debug
 	char ch = stream->peek(stream);
-	if(ch == "/")
+	if(stream->peek(stream) == '\0')
 	{
-		return checkComment(ch);
+		return NULL;
 	}
-	if(isdigit(ch))
+	if(ch == ' ')	// Change this into a throwing loop that throws whitespace
 	{
-		
+		stream->next(stream);
+		return readNext(stream);
 	}
-	if(isAlpha(ch))
+	else if(ch == '/')
 	{
-		return check
+		return readSlash(stream);
 	}
+	else if(isdigit(ch))
+	{
+		return readNumber(stream);
+	}
+	else if(isalpha(ch))
+	{
+		return readIdent(stream);
+	}
+	else if(ch == '.')
+	{
+		return readPeriod(stream);
+	}
+	else 
+	{
+		return readSpecial(stream);
+	}
+}
+
+token * readSlash(inputStream * stream)
+{
+	char ch = stream->next(stream);
+	if(stream->peek(stream) == '/')
+	{
+		printf("Skipping...");
+		while(ch != '\n')
+		{
+			ch = stream->next(stream);
+		}
+		return readNext(stream);
+	}
+	
+	else if(stream->peek(stream) == '*')
+	{
+		ch = stream->next(stream);
+		ch = stream->next(stream);
+		while(ch != '*')
+		{
+			printf("Skipping...");
+			if(ch == '*')
+			{
+				if(stream->peek(stream) == '/')
+					return readNext(stream);
+			}
+			ch = stream->next(stream);
+		}
+	}
+}
+
+token * readNumber(inputStream * stream)
+{
+}
+
+token * readIdent(inputStream * stream)
+{
+}
+
+token * readPeriod(inputStream * stream)
+{
+}
+
+token * readSpecial(inputStream * stream)
+{
 }
 
 char next(inputStream * stream)
@@ -78,17 +147,20 @@ char next(inputStream * stream)
 	}
 	stream->col = 0;
 	(stream->line)++;
-	return '\0';
+	printf("returning: %c", retChar);
+	return retChar;
 }
 
 char peek(const inputStream * stream)
 {
-	return stream->input[stream->pos];
+	char retChar = stream->input[stream->pos];
+	printf("peeking: %c", retChar);
+	return retChar;
 }
 
 int isEndOfStream(inputStream * stream)
 {
-	return stream->pos => strlen(stream->input);
+	return stream->pos >= strlen(stream->input);
 }
 
 void resetStream(inputStream * stream)
@@ -103,6 +175,9 @@ inputStream * createInputStream()
 	stream->line = 1;
 	stream->col = 0;
 	stream->input = (char *)malloc(1024*sizeof(char));
+	stream->toClose = (char *)malloc(1024*sizeof(char));
+	
+	// Functions
 	stream->next = next;
 	stream->isEndOfStream = isEndOfStream;
 	stream->peek = peek; 
