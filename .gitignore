@@ -1,3 +1,6 @@
 a.exe
 in.txt
-textfile.txt
+testfile.txt
+lex_out.txt
+lexer.h
+output.txt

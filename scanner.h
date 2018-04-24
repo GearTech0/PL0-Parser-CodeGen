@@ -552,8 +552,8 @@ int lexRun(int options, char *filename)
 		fread(buffer, 1, length, input);
 	else
 		return 1;
-
-	fclose(input);
+	
+	lexTableIndex = Lex(buffer, table, length);
 
 	// Only output if requested by driver.
 	if (print) {
@@ -563,7 +563,6 @@ int lexRun(int options, char *filename)
 		// Print Source Program
 		fprintf(stdout, "%s\n", buffer);
 
-		lexTableIndex = Lex(buffer, table, length);
 
 		// Print lexeme table
 
