@@ -532,6 +532,42 @@ int lexRun(int options, char *filename)
 	int length, k, lexTableIndex;
 
 	int print = options & l_num;
+	
+	char tokenStr[33][15] = {
+		"nulsym",
+		"identsym",
+		"numbersym",
+		"plussym",
+		"minussym",
+		"multsym",
+		"slashsym",
+		"oddsym",
+		"eqsym",
+		"neqsym",
+		"lessym",
+		"leqsym",
+		"gtrsym",
+		"geqsym",
+		"lparentsym",
+		"rparentsym",
+		"commasym",
+		"semicolonsym",
+		"periodsym",
+		"becomessym",
+		"beginsym",
+		"endsym",
+		"ifsym",
+		"thensym",
+		"whilesym",
+		"dosym",
+		"callsym",
+		"constsym",
+		"varsym",
+		"procsym",
+		"writesym",
+		"readsym",
+		"elsesym"
+	};
 
 	input = fopen(filename, "r");
 	output = fopen("lex_out.txt", "w");
@@ -552,31 +588,14 @@ int lexRun(int options, char *filename)
 		fread(buffer, 1, length, input);
 	else
 		return 1;
-
-	fclose(input);
+	
+	lexTableIndex = Lex(buffer, table, length);
 
 	// Only output if requested by driver.
 	if (print) {
-		// Start
-		fprintf(stdout, "Source Program:%s\n", argv[1]);
-
-		// Print Source Program
-		fprintf(stdout, "%s\n", buffer);
-
-		lexTableIndex = Lex(buffer, table, length);
-
-		// Print lexeme table
-
-		fprintf(stdout, "\nLexeme Table:\n");
-		fprintf(stdout, "lexeme\t\ttoken type\n");
-
-    	for(k = 0; k < lexTableIndex; k++)
-    	{
-    		fprintf(stdout, "%s\t\t%d\n", table[k].name, table[k].token);
-    	}
-
-    	// Print lexeme list
-    	fprintf(stdout, "\nLexeme List:\n");
+		
+    	// Print Internal Representation
+    	fprintf(stdout, "\nInternal Representation:\n");
 
     	for(k = 0; k < lexTableIndex; k++)
     	{
@@ -592,22 +611,43 @@ int lexRun(int options, char *filename)
             	fprintf(stdout, "%d ", lex->val);
     	}
     	fprintf(stdout, "\n");
+		
+		
+		// Print Symbolic Representation
+    	fprintf(stdout, "\nSymbolic Representation:\n");
+
+    	for(k = 0; k < lexTableIndex; k++)
+    	{
+    		lex = &table[k];
+    		fprintf(stdout, "%s ", tokenStr[lex->token-1]);
+
+        	// If an identifier, print variable name
+        	if(lex->token == 2)
+            	fprintf(stdout, "%s ", lex->name);
+
+        	// If number, print its ascii number value
+        	else if(lex->token == 3)
+            	fprintf(stdout, "%d ", lex->val);
+    	}
+    	fprintf(stdout, "\n");
 	}
 
 	// Output to the Parser
 	for(k = 0; k < lexTableIndex; k++)
-    	{
-    		lex = &table[k];
-    		fprintf(output, "%d ", lex->token);
+	{
+		lex = &table[k];
+		fprintf(output, "%d ", lex->token);
 
-        	// If an identifier, print variable name
-        	if(lex->token == 2)
-            	fprintf(output, "%s ", lex->name);
+		// If an identifier, print variable name
+		if(lex->token == 2)
+			fprintf(output, "%s ", lex->name);
 
-        	// If number, print its ascii number value
-        	else if(lex->token == 3)
-            	fprintf(output, "%d ", lex->val);
-    	}
+		// If number, print its ascii number value
+		else if(lex->token == 3)
+			fprintf(output, "%d ", lex->val);
+	}
+	
+	fprintf(stdout, "\n");
 
     fclose(input);
     fclose(output);
