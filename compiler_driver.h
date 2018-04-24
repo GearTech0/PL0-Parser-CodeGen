@@ -22,8 +22,12 @@ int cdRun(int options, char * filename)
 {
 	// Run Scanner
 	printf("-------------------------------------------\n");
+  printf("LIST OF LEXEMES/TOKENS:\n");
 	lexRun(options, filename);
 	
+  printf("Code is syntactically correct. Assembly code generated successfully.\n");
+	printf("-------------------------------------------\n");
+  printf("GENERATED INTERMEDIATE CODE:\n");
 	// Run Parser
 //	int parser = runParser(options, "lex_out.txt");
 //	if(parser)
@@ -31,11 +35,11 @@ int cdRun(int options, char * filename)
 //		printf("Code is not syntactically correct. Assembly code generated successfully.\n");
 //		return 0;
 //	}
-	printf("Code is syntactically correct. Assembly code generated successfully.\n");
-	printf("-------------------------------------------\n");
+ 
+  printf("-------------------------------------------\n");
 	printf("VIRTUAL MACHINE TRACE:\nInitial Values:\nPC	BP	SP	Stack\n0	1	0	0 \n\nStack Trace:\n");
 	// Run Virtual Machine
-	//vmRun(options, filename);
+	vmRun(options, "generator.out");
 }
 
 int getOptionNum(char * option)
