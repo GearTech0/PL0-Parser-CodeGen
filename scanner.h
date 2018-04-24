@@ -558,7 +558,7 @@ int lexRun(int options, char *filename)
 	// Only output if requested by driver.
 	if (print) {
 		// Start
-		fprintf(stdout, "Source Program:%s\n", argv[1]);
+		fprintf(stdout, "Source Program:%s\n", filename);
 
 		// Print Source Program
 		fprintf(stdout, "%s\n", buffer);
@@ -596,18 +596,18 @@ int lexRun(int options, char *filename)
 
 	// Output to the Parser
 	for(k = 0; k < lexTableIndex; k++)
-    	{
-    		lex = &table[k];
-    		fprintf(output, "%d ", lex->token);
+	{
+		lex = &table[k];
+		fprintf(output, "%d ", lex->token);
 
-        	// If an identifier, print variable name
-        	if(lex->token == 2)
-            	fprintf(output, "%s ", lex->name);
+		// If an identifier, print variable name
+		if(lex->token == 2)
+			fprintf(output, "%s ", lex->name);
 
-        	// If number, print its ascii number value
-        	else if(lex->token == 3)
-            	fprintf(output, "%d ", lex->val);
-    	}
+		// If number, print its ascii number value
+		else if(lex->token == 3)
+			fprintf(output, "%d ", lex->val);
+	}
 
     fclose(input);
     fclose(output);

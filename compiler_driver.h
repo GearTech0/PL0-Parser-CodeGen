@@ -21,13 +21,13 @@ int getOptionNum(char * option);
 int cdRun(int options, char * filename)
 {
 	// Run Scanner
+	lexRun(options, filename);
 	
 	// Run Parser
 	
-	// Run Code Generator
 	
 	// Run Virtual Machine
-	vmRun(options, filename);
+	//vmRun(options, filename);
 }
 
 int getOptionNum(char * option)
