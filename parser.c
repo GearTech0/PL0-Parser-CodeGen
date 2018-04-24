@@ -7,6 +7,8 @@
 
 #define MAX_SYMBOL_TABLE_SIZE 100
 
+#define MAX_CODE_LENGTH 1000
+
 // Declaration of Token Types
 typedef enum {
 	nulsym = 1, identsym, 	numbersym, 	plussym, 	minussym,	multsym,  	
@@ -33,6 +35,15 @@ typedef struct symbol{
 	int addr;						// M address
 } symbol;
 
+// Output to the Virtual Machine
+typedef struct instruction{
+	int op;
+	int l;
+	int m;
+} instruction;
+
+void printError(char *error);
+
 int program(int *tablePosition, lexeme (*table)[MAX_TOKENS]);
 int block(int *tablePosition, lexeme (*table)[MAX_TOKENS]);
 int statement(int *tablePosition, lexeme (*table)[MAX_TOKENS]);
@@ -43,8 +54,10 @@ int factor(int *tablePosition, lexeme (*table)[MAX_TOKENS]);
 
 int getToken(int *index);
 
+instruction code[MAX_CODE_LENGTH];
+int codePos = 0;
 
-lexeme table[MAX_TOKENS];
+//lexeme table[MAX_TOKENS];
 int tablePosition = 0, position = 0;
 
 int symbolPosition = 0;
@@ -52,14 +65,15 @@ symbol symbol_table[MAX_SYMBOL_TABLE_SIZE];
 
 int kind, val, level, addr;
 
+int errNum = 0;
+
 int runParser(int options, char *filename) {
 	FILE *input;
-
 	int token;
 	int position;
 	int print = options & a_num;
-
-	//lexeme table[MAX_TOKENS];
+  
+	lexeme table[MAX_TOKENS];
 
 	input = fopen(filename, "r");
 	if (input == NULL)
@@ -88,6 +102,9 @@ int runParser(int options, char *filename) {
 	position = 0;
 	program(&position, &table);
 
+	if (errNum != 0)
+		return 1;
+
 	return 0;
 }
 
@@ -99,7 +116,7 @@ int getToken(int *index)
 int factor(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 {
 	int index = *tablePosition;
-	
+  
 	// factor ::= ident | number | "(" expression ")“
 	if (table[index]->token == identsym)
 	{
@@ -116,12 +133,14 @@ int factor(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 		if (table[index]->token != rparentsym)
 		{
 			//printf("%s\n", getError(21));
+			return ++errNum;
 		}
 		getToken(&index);
 	}
 	else
 	{
 		// error code?
+		return ++errNum;
 	}
 
 	return 0;
@@ -179,6 +198,7 @@ int condition(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 			//(*tablePosition)++;
 
 			//printf("%s\n", getError(8));
+			return ++errNum;
 		}
 		(*tablePosition)++;
 		expression(tablePosition, table);
@@ -203,6 +223,7 @@ int statement(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 		if (table[(*tablePosition)++]->token != becomessym)
 		{
 			//printf("%s\n", getError(12));
+			return ++errNum;
 		}
 		expression(tablePosition, table);
 	}
@@ -212,6 +233,7 @@ int statement(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 		if (table[(*tablePosition)++]->token != identsym)
 		{
 			//error code?
+			return ++errNum;
 		}
 
 	}
@@ -229,6 +251,7 @@ int statement(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 		if (table[(*tablePosition)++]->token != endsym)
 		{
 			//error code?
+			return ++errNum;
 		}
 	}
 	else if (table[*tablePosition]->token == ifsym)
@@ -238,6 +261,7 @@ int statement(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 		if (table[(*tablePosition)++]->token != thensym)
 		{
 			//error code?
+			return ++errNum;
 		}
 		statement(tablePosition, table);
 
@@ -249,6 +273,7 @@ int statement(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 		if (table[(*tablePosition)++]->token != dosym)
 		{
 			//error code?
+			return ++errNum;
 		}
 		statement(tablePosition, table);
 
@@ -256,6 +281,7 @@ int statement(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 	else
 	{
 		// error code?
+		return ++errNum;
 	}
 
 	return 0;
@@ -288,16 +314,19 @@ int block(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 
 			if (table[*tablePosition]->token != identsym)
 			{
-				//printf("%s\n", getError(3));
+				printError(getError(3));
+				return ++errNum;
 			}
 			else
 			{
+				// name for new const
 				(*tablePosition)++;
 			}
 
 			if (table[*tablePosition]->token != eqsym)
 			{
-				//printf("%s\n", getError(8));
+				printError(getError(8));
+				return ++errNum;
 			}
 			else
 			{
@@ -306,10 +335,12 @@ int block(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 
 			if (table[*tablePosition]->token != numbersym)
 			{
-				//printf("%s\n", getError(8));
+				printError(getError(8));
+				return ++errNum;
 			}
 			else
 			{
+				// val for new const
 				(*tablePosition)++;
 			}
 
@@ -317,7 +348,8 @@ int block(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 
 		if (table[(*tablePosition)++]->token != semicolonsym)
 			{
-				//printf("%s\n", getError(4));
+				printError(getError(4));
+				return ++errNum;
 			}
 	}
 
@@ -327,13 +359,18 @@ int block(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 		do {
 			if (table[(*tablePosition)++]->token != identsym)
 			{
-				//printf("%s\n", getError(3));
+				// name for new var
+
+				printError(getError(3));
+				return ++errNum;
 			}
+			// next var
 		} while (table[*tablePosition]->token == commasym);
 
 		if (table[(*tablePosition)++]->token != semicolonsym)
 		{
-			//printf("%s\n", getError(4));
+			printError(getError(4));
+			return ++errNum;
 		}
 
 	}
@@ -341,16 +378,22 @@ int block(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 	{
 		if (table[(*tablePosition)++]->token != identsym)
 		{
-			//printf("%s\n", getError(3));
+			printError(getError(3));
+			return ++errNum;
 		}
+		// name for new proc
 		if (table[(*tablePosition)++]->token != semicolonsym)
 		{
-			//printf("%s\n", getError(4));
+			printError(getError(4));
+			return ++errNum;
 		}
+
+		// increase lex lvl?
 		block(tablePosition, table);
 		if (table[(*tablePosition)++]->token != semicolonsym)
 		{
-			//printf("%s\n", getError(4));
+			printError(getError(4));
+			return ++errNum;
 		}
 	}
 	statement(tablePosition, table);
@@ -368,8 +411,26 @@ int program(int *tablePosition, lexeme (*table)[MAX_TOKENS])
 	{
 		// Expected period.
 		//printf("%s\n", getError(8));
+		return ++errNum;
 	}
 	return 0;
+}
+
+void printError(char *error)
+{
+	int print = options & a_num;
+
+	if (print != 0)
+	{
+		printf("%s\n", error);
+	}
+}
+
+void emit(int OP, int L, int M)
+{
+	code[codePos].op = OP;
+	code[codePos].l = L;
+	code[codePos].m = M;
 }
 
 // DELETE ME
