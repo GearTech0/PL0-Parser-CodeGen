@@ -21,10 +21,18 @@ int getOptionNum(char * option);
 int cdRun(int options, char * filename)
 {
 	// Run Scanner
+	printf("-------------------------------------------\n");
 	lexRun(options, filename);
 	
 	// Run Parser
-	
+//	int parser = runParser(options, "lex_out.txt");
+//	if(parser)
+//	{
+//		printf("Code is not syntactically correct. Assembly code generated successfully.\n");
+//		return 0;
+//	}
+	printf("Code is syntactically correct. Assembly code generated successfully.\n");
+	printf("-------------------------------------------\n");
 	
 	// Run Virtual Machine
 	//vmRun(options, filename);

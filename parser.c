@@ -41,7 +41,7 @@ int expression(int *tablePosition, lexeme *table);
 int term(int *tablePosition, lexeme *table);
 int factor(int *tablePosition, lexeme *table);
 
-int getToken();
+int getToken(int *index);
 
 
 lexeme table[MAX_TOKENS];
@@ -91,25 +91,33 @@ int runParser(int options, char *filename) {
 	return 0;
 }
 
+int getToken(int *index)
+{
+	return ++(*index);
+}
+
 int factor(int *tablePosition, lexeme *table)
 {
+	int index = *tablePosition;
+	
 	// factor ::= ident | number | "(" expression ")“
-	if (table[*tablePosition].token == identsym)
+	if (table[index].token == identsym)
 	{
-		(*tablePosition)++;
+		getToken(&index);
 	}
-	else if (table[*tablePosition].token == numbersym)
+	else if (table[index].token == numbersym)
 	{
-		(*tablePosition)++;
+		getToken(&index);
 	}
-	else if (table[*tablePosition].token == lparentsym)
+	else if (table[index].token == lparentsym)
 	{
-		(*tablePosition)++;
+		getToken(&index);
 		expression(tablePosition, table);
-		if (table[(*tablePosition)++].token != rparentsym)
+		if (table[index].token != rparentsym)
 		{
 			//printf("%s\n", getError(21));
 		}
+		getToken(&index);
 	}
 	else
 	{
