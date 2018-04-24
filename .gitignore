@@ -4,3 +4,4 @@ testfile.txt
 lex_out.txt
 lexer.h
 output.txt
+delete.c

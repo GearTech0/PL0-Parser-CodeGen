@@ -33,7 +33,7 @@ int cdRun(int options, char * filename)
 //	}
 	printf("Code is syntactically correct. Assembly code generated successfully.\n");
 	printf("-------------------------------------------\n");
-	
+	printf("VIRTUAL MACHINE TRACE:\nInitial Values:\nPC	BP	SP	Stack\n0	1	0	0 \n\nStack Trace:\n");
 	// Run Virtual Machine
 	//vmRun(options, filename);
 }

@@ -589,11 +589,6 @@ int lexRun(int options, char *filename)
 	else
 		return 1;
 	
-	fprintf(stdout, "Source Program:%s\n", filename);
-
-	// Print Source Program
-	fprintf(stdout, "%s\n", buffer);
-	
 	lexTableIndex = Lex(buffer, table, length);
 
 	// Only output if requested by driver.
@@ -651,6 +646,8 @@ int lexRun(int options, char *filename)
 		else if(lex->token == 3)
 			fprintf(output, "%d ", lex->val);
 	}
+	
+	fprintf(stdout, "\n");
 
     fclose(input);
     fclose(output);

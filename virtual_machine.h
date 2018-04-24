@@ -54,7 +54,7 @@ void vmRun(int options, char * filename)
 		if(print)
 		{
 			// Print code info
-			printf("%-4s%3d%3d%3d[%3d%3d%3d] ", opToString(code[i]->op), code[i]->r, code[i]->l, code[i]->m, PC, BP, SP);
+			printf("%d\t%-4s%3d%3d%3d[%3d%3d%3d] ", opToString(code[i]->op), code[i]->r, code[i]->l, code[i]->m, PC, BP, SP);
 			printStack(SP, BP, stack, LEX);
 			printf("\n");
 
