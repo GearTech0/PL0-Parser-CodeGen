@@ -20,7 +20,7 @@ typedef struct inputStream
 char next(inputStream * stream);
 char peek(const inputStream * stream);
 int isEndOfStream(inputStream * stream);
-token * readNext(inputStream * stream);
+void readNext(inputStream * stream, token * tokenList);
 void resetStream(inputStream * stream);
 inputStream * createInputStream();
 
@@ -49,59 +49,66 @@ void scanFile(char * filename)
 	printf("\ninput: \n%s\n", stream->input); // Debug
 	strcat(stream->input, "\0");
 	
-	addToken(tokenList, readNext(stream));
+	while(!stream->isEndOfStream(stream))
+	{
+		readNext(stream, tokenList);
+	}
 	
 	fclose(fp);
 	free(stream);
 	free(tokenList);
 }
 
-token * readNext(inputStream * stream)
+void readNext(inputStream * stream, token * tokenList)
 {
 	//printf("%c", stream->next(stream)); Debug
 	char ch = stream->peek(stream);
-	if(stream->peek(stream) == '\0')
+	printf("char %d\n", ch);
+	if(ch == '\0')
 	{
+		printf("end read");
 		return NULL;
 	}
-	if(ch == ' ')	// Change this into a throwing loop that throws whitespace
+	else if(ch == ' ')	// Change this into a throwing loop that throws whitespace
 	{
 		stream->next(stream);
-		return readNext(stream);
+		readNext(stream);
 	}
 	else if(ch == '/')
 	{
-		return readSlash(stream);
+		readSlash(stream);
 	}
 	else if(isdigit(ch))
 	{
-		return readNumber(stream);
+		readNumber(stream);
 	}
 	else if(isalpha(ch))
 	{
-		return readIdent(stream);
+		readIdent(stream);
 	}
 	else if(ch == '.')
 	{
-		return readPeriod(stream);
+		readPeriod(stream);
 	}
 	else 
 	{
-		return readSpecial(stream);
+		readSpecial(stream);
 	}
 }
 
 token * readSlash(inputStream * stream)
 {
 	char ch = stream->next(stream);
+	//printf("char %d\n", ch);
 	if(stream->peek(stream) == '/')
 	{
-		printf("Skipping...");
+		printf("Skipping1...\n");
 		while(ch != '\n')
 		{
 			ch = stream->next(stream);
 		}
-		return readNext(stream);
+		
+		return null;
 	}
 	
 	else if(stream->peek(stream) == '*')
@@ -110,11 +117,17 @@ token * readSlash(inputStream * stream)
 		ch = stream->next(stream);
 		while(ch != '*')
 		{
-			printf("Skipping...");
-			if(ch == '*')
+			printf("Skipping2...\n");
+			if(stream->peek(stream) == '*')
 			{
+				stream->next(stream);
 				if(stream->peek(stream) == '/')
-					return readNext(stream);
+					return null;
+			}
+			if(stream->peek(stream) == '\0')
+			{
+				// Does not end
+				return null;
 			}
 			ch = stream->next(stream);
 		}
@@ -147,14 +160,14 @@ char next(inputStream * stream)
 	}
 	stream->col = 0;
 	(stream->line)++;
-	printf("returning: %c", retChar);
+	printf("returning: %d\n", retChar);
 	return retChar;
 }
 
 char peek(const inputStream * stream)
 {
 	char retChar = stream->input[stream->pos];
-	printf("peeking: %c", retChar);
+	printf("peeking: %c\n", retChar);
 	return retChar;
 }
 

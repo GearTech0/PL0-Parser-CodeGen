@@ -56,6 +56,8 @@ void addToken(token * head, token * toAdd)
 {
 	token * temp = head;
 	
+	if(!toAdd) return;
+	
 	while(temp->next)
 	{
 		temp = temp->next;
