@@ -1,3 +1,12 @@
+/*
+	COP3402 - Spring 2018
+
+	System Software Assignment 3
+	PL/0 Parser/Code Generator
+
+	Authors - Daquaris Chadwick, Marcus Sooter
+*/
+
 #ifndef SCANNER_H
 #define SCANNER_H
 
@@ -575,7 +584,7 @@ int lexRun(int options, char *filename)
 	if (input == NULL)
 	{
 		printf("Error: File not found.\n");
-		return 0;
+		exit(1);
 	}
 
 	fseek (input, 0, SEEK_END);

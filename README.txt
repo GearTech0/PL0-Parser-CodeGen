@@ -3,7 +3,7 @@ COP3402 - Spring 2018
 System Software Assignment 3
 PL/0 Parser/Code Generator
 
-Authors - Daquaris Chadwick
+Authors - Daquaris Chadwick, Marcus Sooter
 
 How to use the PL/0 Code Parser/Code Generator:
 
