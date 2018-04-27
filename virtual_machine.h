@@ -1,4 +1,4 @@
-/**
+/*
 	COP3402 - Spring 2018
 
 	System Software Assignment 3

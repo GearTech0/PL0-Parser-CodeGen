@@ -1,4 +1,4 @@
-/**
+/*
 	COP3402 - Spring 2018
 
 	System Software Assignment 3
@@ -19,9 +19,9 @@ enum options
 
 #include <string.h>
 
+#include "error.h"
 #include "scanner.h"
 #include "parser.h"
-#include "code_generator.h"
 #include "virtual_machine.h"
 
 int cdRun(int options, char * filename);
@@ -30,24 +30,33 @@ int getOptionNum(char * option);
 int cdRun(int options, char * filename)
 {
 	// Run Scanner
-	printf("-------------------------------------------\n");
-	printf("LIST OF LEXEMES/TOKENS:\n");
+	if(options & l_num)
+	{
+		printf("-------------------------------------------\n");
+		printf("LIST OF LEXEMES/TOKENS:\n");
+	}
 	lexRun(options, filename);
-	
+  
 	// Run Parser
 	int parser = runParser(options, "lex_out.txt");
-	if(parser)
+	if(options & a_num)
 	{
-		printf("Code is not syntactically correct. Assembly code generated successfully.\n");
-		return 0;
+		if(parser)
+		{
+			printf("Code is not syntactically correct.\n");
+			return 0;
+		}
+		printf("Code is syntactically correct. Assembly code generated successfully.\n");
+		printf("-------------------------------------------\n");
+		printf("GENERATED INTERMEDIATE CODE:\n");
 	}
-	printf("Code is syntactically correct. Assembly code generated successfully.\n");
-	printf("-------------------------------------------\n");
-	printf("GENERATED INTERMEDIATE CODE:\n");
  
-	printf("-------------------------------------------\n");
-	printf("VIRTUAL MACHINE TRACE:\nInitial Values:\nPC	BP	SP	Stack\n0	1	0	0 \n\nStack Trace:\n");
 	// Run Virtual Machine
+	if(options & v_num)
+	{
+		printf("-------------------------------------------\n");
+		printf("VIRTUAL MACHINE TRACE:\nInitial Values:\nPC	BP	SP	Stack\n0	1	0	0 \n\nStack Trace:\n");
+	}
 	vmRun(options, "generator.out");
 }
 
