@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define MAX_CODE_LENGTH 500
 #define MAX_STACK_HEIGHT 2000
 #define MAX_LEXI_LEVELS 3
 

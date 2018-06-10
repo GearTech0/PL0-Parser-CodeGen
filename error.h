@@ -1,7 +1,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-char * getError(int errorNum);
+#include <string.h>
 
 char * getError(int errorNum)
 {

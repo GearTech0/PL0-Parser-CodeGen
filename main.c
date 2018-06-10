@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "compiler_driver.h"
 #include "error.h"
+#include "compiler_driver.h"
 
 int main(int argc, char ** argv)
 {
